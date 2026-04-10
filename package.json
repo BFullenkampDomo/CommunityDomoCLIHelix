@@ -1,0 +1,27 @@
+{
+  "name": "community-domo-cli-helix",
+  "version": "0.1.0",
+  "description": "Domo CLI for Claude Code — native-first Domo platform operations via shell commands",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "domo-helix": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
+  },
+  "keywords": ["domo", "cli", "claude", "analytics", "bi"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "commander": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}
