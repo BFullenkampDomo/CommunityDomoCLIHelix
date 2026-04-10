@@ -27,6 +27,73 @@ All commands output JSON to stdout. Errors go to stderr with exit code 1.
 - **Query indexing delay**: Data is queryable within ~10-15 seconds after `dataset create-with-data`
 - **SQL table name**: Use `table` as the table name in SQL queries (e.g. `SELECT * FROM table LIMIT 100`)
 
+## Card Creation Body Schema
+
+The `card create` command requires a specific JSON body structure. All fields shown are required unless noted.
+
+```json
+{
+  "definition": {
+    "subscriptions": {
+      "big_number": { "name": "big_number", "columns": [/* first VALUE col */], "filters": [] },
+      "main": { "name": "main", "columns": [/* column mappings */], "filters": [],
+                "orderBy": [], "groupBy": [/* auto from ITEM+SERIES */],
+                "fiscal": false, "projection": false, "distinct": false }
+    },
+    "formulas": { "dsUpdated": [], "dsDeleted": [], "card": [] },
+    "annotations": { "new": [], "modified": [], "deleted": [] },
+    "conditionalFormats": { "card": [], "datasource": [] },
+    "controls": [],
+    "segments": { "active": [], "create": [], "update": [], "delete": [] },
+    "charts": { "main": { "component": "main", "chartType": "<type>", "overrides": {}, "goal": null } },
+    "dynamicTitle": { "text": [{"text": "<title>", "type": "TEXT"}] },
+    "chartVersion": "12", "inputTable": false, "noDateRange": false, "title": "<title>"
+  },
+  "dataProvider": { "dataSourceId": "<DATASET_UUID>" },
+  "variables": true,
+  "columns": false
+}
+```
+
+### Column Mappings
+
+For dataset columns: `{"column": "Revenue", "mapping": "VALUE", "aggregation": "SUM"}`
+For BeastModes: `{"formulaId": "calculation_abc123", "mapping": "VALUE"}` (use `formulaId` NOT `column`)
+Mapping types: `ITEM` (x-axis/category), `VALUE` (y-axis/measure), `SERIES` (color/legend)
+Aggregation: `SUM`, `AVG`, `COUNT`, `MIN`, `MAX`, `UNIQUE`
+
+**groupBy**: Auto-built from ITEM and SERIES columns: `[{"column": "Name"}, {"column": "Category"}]`. Missing groupBy causes incorrect charts.
+
+### big_number Rules
+
+- For most chart types: populate with the first VALUE column including aggregation, alias, and format
+- Format example: `{"type": "abbreviated", "format": "#A"}`
+- For `badge_singlevalue` only: use empty columns `[]` (the card itself displays the number)
+
+### Card Creation Gotchas
+
+- **badge_line returns 400** — use `badge_two_trendline` or `badge_area` instead
+- **conditionalFormats and segments must be OBJECTS** `{"card":[],"datasource":[]}` — NOT arrays
+- **variables must be `true`**, columns must be `false`
+- **Use `dataProvider.dataSourceId`** — NOT `dsId`
+- **Both subscriptions required** — `big_number` AND `main` must be present
+- **CREATE uses `PUT`** with `pageId` query param; UPDATE uses `PUT` with `cardId` in path
+- **Override values are all strings** — including booleans and numbers
+
+### Chart Types (Verified Working)
+
+**Bars**: badge_vert_bar, badge_horiz_bar, badge_vert_stackedbar, badge_horiz_stackedbar, badge_vert_100stackedbar, badge_horiz_100stackedbar, badge_vert_grouped, badge_horiz_grouped
+**Trends**: badge_two_trendline (NOT badge_line), badge_area, badge_stacked_area, badge_curved_area, badge_spark_line
+**Pie/Donut**: badge_pie, badge_donut, badge_nautilus
+**Single Value**: badge_singlevalue, badge_gauge, badge_gauge_fill, badge_filled_gauge
+**Tables**: badge_table, badge_pivot_table, badge_flex_table, badge_heat_map_table
+**Combo**: badge_line_bar (line+bar), badge_symbol_bar
+**Scatter/Bubble**: badge_scatter, badge_bubble
+**Other**: badge_funnel, badge_treemap, badge_radar, badge_waterfall, badge_stream, badge_word_cloud, badge_waffle
+**Multi-Value**: badge_multi_value_cols, badge_pop_multi_value
+
+See `reference/card-creation.md` for all 207 chart types with override schemas.
+
 ## End-to-End Workflow
 
 ```
@@ -41,7 +108,7 @@ All commands output JSON to stdout. Errors go to stderr with exit code 1.
 
 ## Reference Data
 
-**Chart types**: badge_vert_bar, badge_horiz_bar, badge_line, badge_pie, badge_donut, badge_singlevalue, badge_table, badge_vert_stackedbar, badge_area, badge_scatter
+**Chart types**: See Card Creation Body Schema section above for complete verified list. NOTE: badge_line returns 400 — use badge_two_trendline or badge_area instead.
 
 **Layout grid**: Desktop 60 units (aspect 1.67), Mobile 12 units (aspect 1.0), frame margin 4, padding 8
 

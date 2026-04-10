@@ -32,7 +32,7 @@ export function registerCardCommands(program: Command, auth: DomoAuth): void {
 
   card
     .command("create <pageId>")
-    .description("Create a native Domo card on a page (use viewId as pageId for App Studio)")
+    .description("Create a native Domo card on a page. Use viewId as pageId for App Studio. See CLAUDE.md for full body schema.")
     .option("--body <json>", "Full card body JSON")
     .option("--body-file <path>", "Path to card body JSON file")
     .action(async (pageId: string, opts) => {
