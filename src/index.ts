@@ -22,7 +22,7 @@ const program = new Command();
 program
   .name("domo-helix")
   .version("0.1.0")
-  .description("Domo CLI for Claude Code — native-first platform operations")
+  .description("Domo CLI for AI coding agents — native-first platform operations")
   .option("--instance <hostname>", "Domo instance hostname (overrides DOMO_INSTANCE)")
   .option("--token <token>", "Developer token (overrides DOMO_TOKEN)");
 

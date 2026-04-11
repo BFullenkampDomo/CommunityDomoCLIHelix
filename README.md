@@ -1,10 +1,24 @@
-# Helix CLI — Domo CLI for Claude Code
+# Helix CLI — Domo CLI for AI Coding Agents
 
-A native-first CLI that gives AI agents full control of the [Domo](https://www.domo.com) BI platform. Build analytics experiences end-to-end — from raw data to polished App Studio dashboards — using shell commands instead of MCP tools.
+A native-first CLI that gives AI coding agents full control of the [Domo](https://www.domo.com) BI platform. Build analytics experiences end-to-end — from raw data to polished App Studio dashboards — using shell commands instead of MCP tools.
 
-**Why CLI instead of MCP?** MCP loads every tool schema into the LLM context window on every message. With 30+ tools, that's ~6,000-12,000 tokens per turn. The CLI approach replaces all of that with a single CLAUDE.md file (~2,000 tokens, cached once), achieving a **3-6x reduction in per-message context cost**. Claude Code invokes CLI commands via the Bash tool — no protocol overhead, no schema bloat.
+**Compatible with:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Snowflake Cortex Code CLI](https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code-cli), and any AI agent with Bash tool access.
+
+**Why CLI instead of MCP?** MCP loads every tool schema into the LLM context window on every message. With 30+ tools, that's ~6,000-12,000 tokens per turn. The CLI approach replaces all of that with a single instruction file (~2,000 tokens, cached once), achieving a **3-6x reduction in per-message context cost**. The agent invokes CLI commands via its Bash tool — no protocol overhead, no schema bloat.
 
 Built as a companion to [CommunityDomoMCPHelix](https://github.com/BFullenkampDomo/CommunityDomoMCPHelix) for performance comparison.
+
+---
+
+## Agent Compatibility
+
+| Agent | Instruction File | Skills Directory | Status |
+|-------|-----------------|------------------|--------|
+| Claude Code | CLAUDE.md + AGENTS.md | .claude/skills/ | Supported |
+| Cortex Code CLI | AGENTS.md + CLAUDE.md | .claude/skills/ or .cortex/skills/ | Supported |
+| Other agents | AGENTS.md | — | Supported (via Bash) |
+
+The CLI binary (`domo-helix`) is fully agent-agnostic. Any tool that can execute shell commands and read JSON output can use it.
 
 ---
 
@@ -143,7 +157,7 @@ All command descriptions and CLAUDE.md encode this preference. An AI agent using
 | **Process model** | Long-running server (stdio) | One process per command |
 | **Session caching** | In-memory (lost on restart) | File-based (~/.cache/domo-cli/) |
 | **Dependencies** | @modelcontextprotocol/sdk (~49MB node_modules) | commander (~80KB) |
-| **Discovery** | Auto (tool schemas in context) | CLAUDE.md + `--help` |
+| **Discovery** | Auto (tool schemas in context) | AGENTS.md + `--help` |
 | **Protocol overhead** | JSON-RPC framing | None |
 
 ---
@@ -165,7 +179,7 @@ All command descriptions and CLAUDE.md encode this preference. An AI agent using
 ## Architecture
 
 ```
-Claude Code
+AI Coding Agent (Claude Code, Cortex Code, etc.)
      |
   Bash tool (shell commands)
      |

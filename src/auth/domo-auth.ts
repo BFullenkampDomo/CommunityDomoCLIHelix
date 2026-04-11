@@ -45,6 +45,7 @@ export class DomoAuth {
     }
 
     if (this.resolvedCredentials?.devToken) {
+      // ryuu stores all token strings in refreshToken; devToken is a boolean flag
       return { "X-Domo-Developer-Token": this.resolvedCredentials.refreshToken };
     }
 
